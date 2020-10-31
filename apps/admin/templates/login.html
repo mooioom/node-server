@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <input id="uname" placeholder="username" />
+    <input id="password" placeholder="password" />
+    <button id="login">Login</button>
+    <script>
+        login.onclick = function(){
+
+            call('login',function(r){
+
+                if(r) location.reload();
+
+            },{
+                name : uname.value,
+                password : password.value
+            });
+
+        }
+    </script>
+</body>
+</html>

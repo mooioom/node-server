@@ -1,0 +1,9 @@
+[
+    {
+        "method" : "GET",
+        "url" : "/",
+        "fn"  : "index",
+        "js"  : ["modular"],
+        "api" : true
+    }
+]

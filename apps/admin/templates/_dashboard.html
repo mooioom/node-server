@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <div id="dashboard">
+        <table>
+            <tr>
+                <td colspan="2" id="top"></td>
+            </tr>
+            <tr>
+                <td colspan="2" id="header">
+                    {{user.name}}
+                    <button id="logout">Logout</button>
+                </td>
+            </tr>
+            <tr>
+                <td id="menu">
+                    <div>user</div>
+                    <div>apps</div>
+                </td>
+                <td id="stage">
+                        user : set, create, update
+                        environments : dev, pre-prod, production, create, clone environments, branch, deploy to production
+                            foreach : view status (online / not), view db, backup db, restart, error logs / logs, recent logins, bandwidth usage, load balancing
+                        self backup : send to remote
+                        security : detect attacks, interact with system firewall to add ip exceptions, etc.
+                        mail : how to send mail? receive
+                        user files : uploads, customers downloads backup, etc.
+                        mobile :
+                        favicon
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" id="footer"></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+
+        call('init',function( data ){
+
+            console.log('init :: ',data);
+
+            dashboard.modular(function(){
+
+                _ = this;
+
+                this.data = data;
+                this.apps = data.apps;
+                this.user = data.user;
+
+                logout.onclick = function(){
+
+                    call('logout',function(){
+                        location.reload();
+                    });
+
+                }
+
+                this.test = function(){
+                    console.log(1);
+                }
+
+                this.$render();
+
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>
