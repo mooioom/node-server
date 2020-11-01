@@ -10,10 +10,13 @@
 </head>
 <body>
     <template file="header"></template>
-    {{{abc}}} bcd {{{abc+'123'}}}
+    Hello {{{name}}}, How Are You?
+    
     <script>
         call('post',function(r){
+
             console.log(r);
+
         },{
             b : 1
         })

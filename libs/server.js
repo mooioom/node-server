@@ -323,6 +323,8 @@ class Server{
 
             }
 
+            //
+
             for( let i in this.settings.public ) {
                 var ext = this.settings.public[i];
                 if( url.endsWith('.'+ext) ) return this.public( req, res, ext );
