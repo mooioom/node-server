@@ -1,7 +1,7 @@
 # node-server
  ## Node Server by Eldad Eliyahu Levi
 
-The server performs as a regular static server
+By default the server acts as a regular static server, routes.json can override routes and redirect requests to controllers (fn) files
 
  ## Features
 
