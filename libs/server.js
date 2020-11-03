@@ -6,6 +6,7 @@ var url  = require('url');
 var Templates = require('./templates');
 var Sessions  = require('./sessions');
 var DB        = require('./db');
+const { debug } = require('console');
 
 var DIR = path.resolve('.');
 
@@ -29,7 +30,7 @@ class Server{
 
             port : 80,
 
-            public : ['js','css','json','ttf','ico','svg','png','jpg','jpeg','txt'],
+            public : ['html','js','css','json','ttf','ico','svg','png','jpg','jpeg','txt'],
 
             app : '/',
 
@@ -149,11 +150,11 @@ class Server{
     "404"( req, res, data ){ return this.generalResponse(404,req,res,data); } // no found
     "500"( req, res, data ){ return this.generalResponse(500,req,res,data); } // server error
 
-    public( req, res, ext ){
+    public( req, res, ext, path ){
 
         //console.log('public',req.url);
 
-        var f = this.base + this.settings.PUBLIC_DIR + req.url;
+        var f = this.base + this.settings.PUBLIC_DIR + ( path || req.url );
         
         if( req.url.indexOf('/__shared/') == 0 ){
             f = DIR + '/shared/' + req.url.replace('/__shared/','');
@@ -166,6 +167,7 @@ class Server{
             if(!exists) return this["404"](req,res);
 
             var content_types = {
+                'html' : 'text/html',
                 'js'   : 'application/javascript',
                 'css'  : 'text/css',
                 'json' : 'application/json',
@@ -268,11 +270,15 @@ class Server{
             var routes = this.routes;
             var url = req.url;
 
+            var uri = req.url.split('').splice(1).join('');
+
+            console.log('server :: request uri :: ', uri );
+
             var route = null;
 
             if( req.method == 'POST' ){
 
-                var template = url.match(/__api\/__template\/(.*)/);
+                var template = req.url.match(/__api\/__template\/(.*)/);
 
                 if( template && template[1] ){
 
@@ -290,7 +296,7 @@ class Server{
 
                 }
 
-                fn = url.match(/__api\/(.*)/);
+                fn = req.url.match(/__api\/(.*)/);
 
                 if( fn && fn[1] ){
 
@@ -323,20 +329,13 @@ class Server{
 
             }
 
-            //
-
-            for( let i in this.settings.public ) {
-                var ext = this.settings.public[i];
-                if( url.endsWith('.'+ext) ) return this.public( req, res, ext );
-            }
-
             routes.forEach( r => {
 
                 if( route ) return;
 
-                if( r.url == url ) route = r;
-                //if( r.regexp && url.match( new RegExp( r.url ,'g') ) ) route = r;
-                if( url.match( new RegExp( r.url ,'g') ) ) route = r;
+                if( r.url == req.url ) route = r;
+                if( r.regexp && req.url.match( new RegExp( r.url ,'g') ) ) route = r;
+                //if( url.match( new RegExp( r.url ,'g') ) ) route = r;
 
             });
 
@@ -414,6 +413,45 @@ class Server{
 
                 return;
 
+            }
+
+            var pub = this.base + this.settings.PUBLIC_DIR + '/';
+
+            var u = uri.split('/');
+            var l = u[ u.length - 1 ];
+            var x = l.split('.');
+
+            if( x.length == 1 ){
+
+                if( fs.existsSync( pub + uri + '.html') ){
+
+                    req.url += '.html';
+
+                }else{
+
+                    try{
+
+                        var stat = fs.lstatSync( pub + uri );
+
+                        if( stat.isDirectory() && fs.existsSync( pub + uri + '/index.html') ){
+
+                            req.url += '/index.html';
+
+                        }
+        
+                    }catch(e){
+    
+                        return this["404"](req,res);
+    
+                    }
+
+                }
+
+            }
+
+            for( let i in this.settings.public ) {
+                var ext = this.settings.public[i];
+                if( req.url.endsWith('.' + ext) ) return this.public( req, res, ext );
             }
 
             res.end('');
